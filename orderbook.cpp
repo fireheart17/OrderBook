@@ -33,7 +33,14 @@ class Order
     string Type;
 
     friend struct CompareBid;
-    friend class OrderBook;
+    // friend class OrderBook;
+    
+
+public:
+    Order(string type, char side, int oid, int quantity, double price) : Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(price) {}
+
+    Order(string type, char side, int oid, int quantity) : // overloaded for market orders
+         Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(-1) {}
 
     char getSide() const { return Side; }
     int getId() const { return Order_id; }
@@ -52,12 +59,8 @@ class Order
         Quantity = quantity;
     }
 
-public:
-    Order(string type, char side, int oid, int quantity, double price) : Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(price) {}
-
-    Order(string type, char side, int oid, int quantity) : // overloaded for market orders
-                                                           Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(-1)
-    {
+    void print(){
+    	cout<<"ID: "<<Order_id<<" Type: "<<Type<<" Side: "<<Side<<" Quantity: "<<Quantity<<" Price: "<<Price<<endl;
     }
 };
 
@@ -86,7 +89,8 @@ class OrderBook
     void process_fillorkill(Order *order)
     {
         int tot = 0;
-        if (order->getSide() == 'B')
+
+        if (order->getSide() == 'B' && asks.size())
         {
             auto it = asks.begin();
             while (it != asks.end() && (*it)->getPrice() <= order->getPrice() && tot < order->getQuantity())
@@ -107,7 +111,7 @@ class OrderBook
                     last_trade_quantity = trade;
 
                     modify_order((*it)->getId(), (*it)->getQuantity() - trade, (*it)->getPrice());
-                    modify_order(order->getId(), order->getQuantity() - trade, order->getPrice());
+                    modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade, order->getPrice());
 
                     if ((*it)->getQuantity() == 0)
                     {
@@ -116,16 +120,19 @@ class OrderBook
                 }
             }
         }
-        else
+        else if(bids.size())
         {
+
             auto it = bids.begin();
             while (it != bids.end() && (*it)->getPrice() >= order->getPrice() && tot < order->getQuantity())
             {
                 tot += (*it)->getQuantity();
                 it++;
             }
+
             if (tot >= order->getQuantity())
-            {
+            {	
+
                 while (order->getQuantity())
                 {
                     it = bids.begin();
@@ -136,14 +143,14 @@ class OrderBook
                     last_trade_quantity = trade;
 
                     modify_order((*it)->getId(), (*it)->getQuantity() - trade, (*it)->getPrice());
-                    modify_order(order->getId(), order->getQuantity() - trade, order->getPrice());
-
+                    modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade, order->getPrice());
                     if ((*it)->getQuantity() == 0)
                     {
                         cancel_order((*it)->getId());
                     }
                 }
             }
+
         }
         cancel_order(order->getId());
     }
@@ -163,7 +170,7 @@ class OrderBook
                 last_trade_quantity = trade;
 
                 modify_order((*it)->getId(), (*it)->getQuantity() - trade, (*it)->getPrice());
-                modify_order(order->getId(), order->getQuantity() - trade);
+                modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade);
 
                 if ((*it)->getQuantity() == 0)
                 {
@@ -186,7 +193,7 @@ class OrderBook
                 last_trade_quantity = trade;
 
                 modify_order((*it)->getId(), (*it)->getQuantity() - trade, (*it)->getPrice());
-                modify_order(order->getId(), order->getQuantity() - trade);
+                modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade);
 
                 if ((*it)->getQuantity() == 0)
                 {
@@ -301,22 +308,7 @@ class OrderBook
         cout << endl;
     }
 
-    void print_summary()
-    {
-        cout << "Summary:\n";
-        if (last_trade_quantity)
-        {
-            cout << "Last Trade Price: " << last_trade_price << " Last Trade Quantity: " << last_trade_quantity << endl;
-        }
-        cout << "Corrupted messages: " << corrupted_messages << "\n";
-        cout << "Duplicate order IDs: " << duplicate_orders << "\n";
-
-        cout << endl;
-        print_order_book();
-        print_levelinfo();
-        print_depth();
-        cout << endl;
-    }
+    
 
     void print_order_book()
     {
@@ -334,6 +326,24 @@ class OrderBook
     }
 
 public:
+
+	void print_summary()
+    {
+        cout << "Summary:\n";
+        if (last_trade_quantity)
+        {
+            cout << "Last Trade Price: " << last_trade_price << " Last Trade Quantity: " << last_trade_quantity << endl;
+        }
+        cout << "Corrupted messages: " << corrupted_messages << "\n";
+        cout << "Duplicate order IDs: " << duplicate_orders << "\n";
+
+        cout << endl;
+        print_order_book();
+        print_levelinfo();
+        print_depth();
+        cout << endl;
+    }
+
     OrderBook() : nextorderid(0), messages(0)
     {
         types = {"limitorder", "fillandkill", "marketorder", "fillorkill"};
@@ -415,34 +425,16 @@ public:
         process_orders();
     }
 
-    void modify_order(int order_id, int quantity)
-    { // overloaded for market orders
-        if (orders.find(order_id) == orders.end())
-        {
-            cout << "Order does not exist.\n";
-            return;
-        }
+    void modifyorderFAKorMarket(int order_id, int quantity,double price)
+    {
         Order *order = orders[order_id];
-        if (order->getSide() == 'B')
-        {
-            bids.erase(order);
-        }
-        else
-        {
-            asks.erase(order);
-        }
-        order->modify(quantity);
-        if (order->getSide() == 'B')
-        {
-            bids.insert(order);
-        }
-        else
-        {
-            asks.insert(order);
-        }
-        cout << "Successfully modified the order having ID " << order_id << endl;
+        order->modify(quantity,price);
+    }
 
-        process_orders();
+    void modifyorderFAKorMarket(int order_id, int quantity)
+    { // overloaded for market orders
+        Order *order = orders[order_id];
+        order->modify(quantity);
     }
 
     void process_message(string msg)
@@ -473,7 +465,7 @@ public:
                 {
                     duplicate_orders++;
                 }
-                else if (quantity <= 0)
+                else if (quantity <= 0 || order_id<=0)
                 {
                     corrupted_messages++;
                     return;
@@ -496,7 +488,7 @@ public:
                 {
                     duplicate_orders++;
                 }
-                else if (quantity <= 0 || price <= 0 || (type != types[0] && type != types[1] && type != types[3]))
+                else if (order_id<=0 || quantity <= 0 || price <= 0 || (type != types[0] && type != types[1] && type != types[3]))
                 {
                     corrupted_messages++;
                 }
@@ -516,7 +508,6 @@ public:
             int order_id = stoi(tokens[1]);
             if (orders.find(order_id) == orders.end())
             {
-
                 corrupted_messages++;
             }
             else
@@ -551,8 +542,12 @@ public:
 
     ~OrderBook()
     {
+    	if(orders.size()){
+    		cout<<"Partially Executed Orders:-\n\n";
+    	}
         while (orders.size())
         {
+        	(*orders.begin()).second->print();
             cancel_order(orders.begin()->first);
         }
         bids.clear();
@@ -563,36 +558,14 @@ public:
 int main()
 {
     OrderBook ob;
-    vector<string> messages = {
-        "A,limitorder,B,1,10,1000",
-        "A,limitorder,A,2,10,800",
-        "A,limitorder,B,3,10,1000",
-        "A,limitorder,A,4,10,400",
-
-        "A,limitorder,A,5,5,1005",
-        "A,marketorder,B,6,10",
-        "A,limitorder,B,7,10,1000",
-        "A,limitorder,A,8,5,1005",
-        "A,fillorkill,A,9,10,1002",
-
-        "A,limitorder,B,1,10,1000",
-        "A,limitorder,A,2,5,1005",
-        "X,1",
-        "A,limitorder,B,10,10,1000",
-        "A,limitorder,A,21,5,1005",
-        "M,1,5,1010",
-        "A,limitorder,B,32,10,1000",
-        "X,5",
-        "M,2,5,1005",
-        "A,limitorder,B,111,10,1000",
-        "A,fillandkill,A,22,5,1000"};
-
-    for (const auto &msg : messages)
-    {
-        ob.process_message(msg);
+    int n;
+    cin>>n;
+    while(n--){
+    	string msg;
+    	cin>>msg;
+    	ob.process_message(msg);
     }
-
-    // ob.print_summary();
+    ob.print_summary();
 
     return 0;
 }
