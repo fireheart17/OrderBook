@@ -20,7 +20,7 @@ void solve()
         int type = uniform_int_distribution<int>(0, types.size() - 1)(rng);
         int sd = uniform_int_distribution<int>(0, side.size() - 1)(rng);
         int id = uniform_int_distribution<int>(-2, 75)(rng);
-        int price = uniform_int_distribution<int>(-2, 75)(rng);
+        double price = uniform_real_distribution<double>(-2.0, 75.0)(rng);
         int quantity = uniform_int_distribution<int>(-2, 75)(rng);
         string mes;
         mes.pb(action[a]);
