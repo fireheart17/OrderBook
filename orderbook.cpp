@@ -1,4 +1,5 @@
 #include <bits/stdc++.h>
+#include <mutex>
 using namespace std;
 
 /*
@@ -92,6 +93,8 @@ class OrderBook
     int duplicate_orders = 0;
     double last_trade_price = 0.0;
     int last_trade_quantity = 0;
+
+    mutex orderbook_mutex;
 
     void process_fillorkill(Order *order)
     {
@@ -329,29 +332,6 @@ class OrderBook
         }
     }
 
-public:
-    void print_summary()
-    {
-        cout << "Summary:\n";
-        if (last_trade_quantity)
-        {
-            cout << "Last Trade Price: " << last_trade_price << " Last Trade Quantity: " << last_trade_quantity << endl;
-        }
-        cout << "Corrupted messages: " << corrupted_messages << "\n";
-        cout << "Duplicate order IDs: " << duplicate_orders << "\n";
-
-        cout << endl;
-        print_order_book();
-        print_levelinfo();
-        print_depth();
-        cout << endl;
-    }
-
-    OrderBook() : nextorderid(0), messages(0)
-    {
-        types = {"limitorder", "fillandkill", "marketorder", "fillorkill"};
-    }
-
     void add_order(string type, char side, int id, int quantity, double price)
     {
         Order *order = new Order(type, side, id, quantity, price);
@@ -470,9 +450,33 @@ public:
         order->modify(quantity);
     }
 
+public:
+    void print_summary()
+    {
+        cout << "Summary:\n";
+        if (last_trade_quantity)
+        {
+            cout << "Last Trade Price: " << last_trade_price << " Last Trade Quantity: " << last_trade_quantity << endl;
+        }
+        cout << "Corrupted messages: " << corrupted_messages << "\n";
+        cout << "Duplicate order IDs: " << duplicate_orders << "\n";
+
+        cout << endl;
+        print_order_book();
+        print_levelinfo();
+        print_depth();
+        cout << endl;
+    }
+
+    OrderBook() : nextorderid(0), messages(0)
+    {
+        types = {"limitorder", "fillandkill", "marketorder", "fillorkill"};
+    }
+
     void process_message(string msg)
     {
-
+        lock_guard<mutex> guard(orderbook_mutex); // Acquires the lock
+                                                  // using just a single semaphore here guards the complete critical section
         istringstream ss(msg);
         string token;
         vector<string> tokens;
