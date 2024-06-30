@@ -64,7 +64,7 @@ The Order Book system is designed to handle and process various types of orders 
    
 2. **Fill and Kill Order (FAK)**: Also known as Immediate or Cancel (IOC), this order attempts to fill as much of the order as possible immediately. Any portion of the order that cannot be filled immediately is canceled.
 
-3. **Market Order**: An order to buy or sell a stock immediately at the best available current price. It prioritizes speed of execution over price.
+3. **Market Order**: An order to buy or sell a stock immediately at the best available current price. This type of order prioritizes speed of execution over price, meaning the price is not specified. In the implementation, if a market order can only be partially filled, the system will fill it to the extent possible and cancel the remaining portion.
    
 4. **Fill or Kill Order (FOK)**: An order that must be executed immediately and completely at the specified price. If the entire order cannot be filled at once, it is canceled.
 
