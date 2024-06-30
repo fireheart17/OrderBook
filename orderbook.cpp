@@ -23,6 +23,11 @@ RULES:
 can't modify market orders;
 if a market order can't be filled completely it will be filled partially and rest will be cancelled
 
+REMAINING:
+
+->add GOODTILLDAY(GTC) order
+-> add semaphores
+
 */
 
 class Order
@@ -34,13 +39,14 @@ class Order
 
     friend struct CompareBid;
     // friend class OrderBook;
-    
 
 public:
     Order(string type, char side, int oid, int quantity, double price) : Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(price) {}
 
     Order(string type, char side, int oid, int quantity) : // overloaded for market orders
-         Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(-1) {}
+                                                           Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(-1)
+    {
+    }
 
     char getSide() const { return Side; }
     int getId() const { return Order_id; }
@@ -59,8 +65,9 @@ public:
         Quantity = quantity;
     }
 
-    void print(){
-    	cout<<"ID: "<<Order_id<<" Type: "<<Type<<" Side: "<<Side<<" Quantity: "<<Quantity<<" Price: "<<Price<<endl;
+    void print()
+    {
+        cout << "ID: " << Order_id << " Type: " << Type << " Side: " << Side << " Quantity: " << Quantity << " Price: " << Price << endl;
     }
 };
 
@@ -120,7 +127,7 @@ class OrderBook
                 }
             }
         }
-        else if(bids.size())
+        else if (bids.size())
         {
 
             auto it = bids.begin();
@@ -131,7 +138,7 @@ class OrderBook
             }
 
             if (tot >= order->getQuantity())
-            {	
+            {
 
                 while (order->getQuantity())
                 {
@@ -150,7 +157,6 @@ class OrderBook
                     }
                 }
             }
-
         }
         cancel_order(order->getId());
     }
@@ -308,8 +314,6 @@ class OrderBook
         cout << endl;
     }
 
-    
-
     void print_order_book()
     {
         cout << "Order Book:\n";
@@ -326,8 +330,7 @@ class OrderBook
     }
 
 public:
-
-	void print_summary()
+    void print_summary()
     {
         cout << "Summary:\n";
         if (last_trade_quantity)
@@ -425,10 +428,40 @@ public:
         process_orders();
     }
 
-    void modifyorderFAKorMarket(int order_id, int quantity,double price)
+    void modify_order(int order_id, int quantity)
+    {
+        if (orders.find(order_id) == orders.end())
+        {
+            cout << "Order does not exist.\n";
+            return;
+        }
+        Order *order = orders[order_id];
+        if (order->getSide() == 'B')
+        {
+            bids.erase(order);
+        }
+        else
+        {
+            asks.erase(order);
+        }
+        order->modify(quantity);
+        if (order->getSide() == 'B')
+        {
+            bids.insert(order);
+        }
+        else
+        {
+            asks.insert(order);
+        }
+        cout << "Successfully modified the order having ID " << order_id << endl;
+
+        process_orders();
+    }
+
+    void modifyorderFAKorMarket(int order_id, int quantity, double price)
     {
         Order *order = orders[order_id];
-        order->modify(quantity,price);
+        order->modify(quantity, price);
     }
 
     void modifyorderFAKorMarket(int order_id, int quantity)
@@ -439,16 +472,18 @@ public:
 
     void process_message(string msg)
     {
-        messages++;
+
         istringstream ss(msg);
         string token;
         vector<string> tokens;
+        messages++;
         while (getline(ss, token, ','))
         {
             tokens.push_back(token);
         }
         if (tokens.empty())
         {
+
             corrupted_messages++;
             return;
         }
@@ -465,7 +500,7 @@ public:
                 {
                     duplicate_orders++;
                 }
-                else if (quantity <= 0 || order_id<=0)
+                else if (quantity <= 0 || order_id <= 0)
                 {
                     corrupted_messages++;
                     return;
@@ -488,7 +523,7 @@ public:
                 {
                     duplicate_orders++;
                 }
-                else if (order_id<=0 || quantity <= 0 || price <= 0 || (type != types[0] && type != types[1] && type != types[3]))
+                else if (order_id <= 0 || quantity <= 0 || price <= 0 || (type != types[0] && type != types[1] && type != types[3]))
                 {
                     corrupted_messages++;
                 }
@@ -529,6 +564,19 @@ public:
                 modify_order(order_id, quantity, price);
             }
         }
+        else if (tokens[0] == "M" && tokens.size() == 3)
+        {
+            int order_id = stoi(tokens[1]);
+            int quantity = stoi(tokens[2]);
+            if (orders.find(order_id) == orders.end() || quantity <= 0)
+            {
+                corrupted_messages++;
+            }
+            else
+            {
+                modify_order(order_id, quantity);
+            }
+        }
         else
         {
             corrupted_messages++;
@@ -542,12 +590,13 @@ public:
 
     ~OrderBook()
     {
-    	if(orders.size()){
-    		cout<<"Partially Executed Orders:-\n\n";
-    	}
+        if (orders.size())
+        {
+            cout << "Partially Executed Orders:-\n\n";
+        }
         while (orders.size())
         {
-        	(*orders.begin()).second->print();
+            (*orders.begin()).second->print();
             cancel_order(orders.begin()->first);
         }
         bids.clear();
@@ -558,12 +607,14 @@ public:
 int main()
 {
     OrderBook ob;
-    int n;
-    cin>>n;
-    while(n--){
-    	string msg;
-    	cin>>msg;
-    	ob.process_message(msg);
+    int n, count = 0;
+    cin >> n;
+    while (n--)
+    {
+        string msg;
+        cin >> msg;
+        // cout << "Processing " << ++count << endl;
+        ob.process_message(msg);
     }
     ob.print_summary();
 
