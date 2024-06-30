@@ -13,7 +13,7 @@ void solve(){
     vector<char>side={'A','B'};
     vector<string>types= {"limitorder", "fillandkill", "marketorder", "fillorkill","ndjbefv","invalidtype"};
     vector<string>messages;
-    int num=500;
+    int num=500;// nujmber of messages to be generated
     cout<<num<<endl;
     for(int i=0;i<num;i++){
     	int a=uniform_int_distribution<int>(0,action.size()-1)(rng);
