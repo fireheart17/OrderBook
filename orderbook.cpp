@@ -120,7 +120,7 @@ class OrderBook
                     last_trade_price = (*it)->getPrice();
                     last_trade_quantity = trade;
 
-                    modify_order((*it)->getId(), (*it)->getQuantity() - trade, (*it)->getPrice());
+                    (*it)->modify((*it)->getQuantity() - trade);
                     modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade, order->getPrice());
 
                     if ((*it)->getQuantity() == 0)
@@ -152,7 +152,7 @@ class OrderBook
                     last_trade_price = order->getPrice();
                     last_trade_quantity = trade;
 
-                    modify_order((*it)->getId(), (*it)->getQuantity() - trade, (*it)->getPrice());
+                    (*it)->modify((*it)->getQuantity() - trade);
                     modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade, order->getPrice());
                     if ((*it)->getQuantity() == 0)
                     {
@@ -178,7 +178,7 @@ class OrderBook
                 last_trade_price = (*it)->getPrice();
                 last_trade_quantity = trade;
 
-                modify_order((*it)->getId(), (*it)->getQuantity() - trade, (*it)->getPrice());
+                (*it)->modify((*it)->getQuantity() - trade);
                 modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade);
 
                 if ((*it)->getQuantity() == 0)
@@ -201,7 +201,7 @@ class OrderBook
                 last_trade_price = (*it)->getPrice();
                 last_trade_quantity = trade;
 
-                modify_order((*it)->getId(), (*it)->getQuantity() - trade, (*it)->getPrice());
+                (*it)->modify((*it)->getQuantity() - trade);
                 modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade);
 
                 if ((*it)->getQuantity() == 0)
