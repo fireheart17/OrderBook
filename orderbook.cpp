@@ -24,6 +24,7 @@ RULES:
 can't modify market orders;
 if a market order can't be filled completely it will be filled partially and rest will be cancelled
 
+
 REMAINING:
 
 ->add GOODTILLDAY(GTC) order
@@ -39,15 +40,14 @@ class Order
     string Type;
 
     friend struct CompareBid;
-    // friend class OrderBook;
+    friend ostream &operator<<(ostream &os, const Order &order);
 
 public:
-    Order(string type, char side, int oid, int quantity, double price) : Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(price) {}
+    Order(string type, char side, int oid, int quantity, double price)
+        : Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(price) {}
 
-    Order(string type, char side, int oid, int quantity) : // overloaded for market orders
-                                                           Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(-1)
-    {
-    }
+    Order(string type, char side, int oid, int quantity)
+        : Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(-1) {}
 
     char getSide() const { return Side; }
     int getId() const { return Order_id; }
@@ -62,15 +62,45 @@ public:
     }
 
     void modify(int quantity)
-    { // overloaded for market orders;
+    { // overloaded for market orders
         Quantity = quantity;
     }
-
-    void print()
-    {
-        cout << "ID: " << Order_id << " Type: " << Type << " Side: " << Side << " Quantity: " << Quantity << " Price: " << Price << endl;
-    }
 };
+
+// Overloading << operator to print Order objects with precision of 5
+ostream &operator<<(ostream &os, const Order &order)
+{
+    os << fixed << setprecision(5); // set precision to 5 decimal places
+    os << "ID: " << order.Order_id
+       << ", Type: " << order.Type
+       << ", Side: " << order.Side
+       << ", Quantity: " << order.Quantity
+       << ", Price: " << order.Price << endl;
+    return os;
+}
+
+class Trade
+{
+    int Bid_id, Ask_id, Quantity;
+    double Price;
+
+public:
+    Trade(int bid_id, int ask_id, int quantity, double price)
+        : Bid_id(bid_id), Ask_id(ask_id), Quantity(quantity), Price(price) {}
+
+    // Friend function to overload << operator for Trade
+    friend ostream &operator<<(ostream &os, const Trade &trade);
+};
+
+// Overloading << operator to print Trade objects with precision of 5
+ostream &operator<<(ostream &os, const Trade &trade)
+{
+    os << fixed << setprecision(5); // set precision to 5 decimal places
+    os << "Traded " << trade.Quantity << " units at Price: $"
+       << trade.Price << " { Ask ID: " << trade.Ask_id << ", Bid ID: " << trade.Bid_id << " }" << endl;
+
+    return os;
+}
 
 struct CompareBid
 {
@@ -93,6 +123,7 @@ class OrderBook
     int duplicate_orders = 0;
     double last_trade_price = 0.0;
     int last_trade_quantity = 0;
+    vector<Trade *> trades;
 
     mutex orderbook_mutex;
 
@@ -114,14 +145,19 @@ class OrderBook
                 {
                     it = asks.begin();
 
-                    int trade = min((*it)->getQuantity(), order->getQuantity());
+                    int units = min((*it)->getQuantity(), order->getQuantity());
 
-                    cout << "Trade: Quantity = " << trade << " at $" << (*it)->getPrice() << " (Bid ID: " << (order)->getId() << ", Ask ID: " << (*it)->getId() << ")\n\n";
+                    Trade *trade = new Trade((order)->getId(), (*it)->getId(), units, ((*it)->getPrice()));
+
+                    cout << (*trade);
+
+                    trades.push_back(trade);
+
                     last_trade_price = (*it)->getPrice();
-                    last_trade_quantity = trade;
+                    last_trade_quantity = units;
 
-                    (*it)->modify((*it)->getQuantity() - trade);
-                    modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade, order->getPrice());
+                    (*it)->modify((*it)->getQuantity() - units);
+                    modifyorderFAKorMarket(order->getId(), order->getQuantity() - units, order->getPrice());
 
                     if ((*it)->getQuantity() == 0)
                     {
@@ -146,14 +182,19 @@ class OrderBook
                 while (order->getQuantity())
                 {
                     it = bids.begin();
-                    int trade = min((*it)->getQuantity(), order->getQuantity());
+                    int units = min((*it)->getQuantity(), order->getQuantity());
 
-                    cout << "Trade: Quantity = " << trade << " at $" << order->getPrice() << " (Bid ID: " << (*it)->getId() << ", Ask ID: " << order->getId() << ")\n\n";
+                    Trade *trade = new Trade((*it)->getId(), (order)->getId(), units, ((order)->getPrice()));
+
+                    cout << (*trade);
+
+                    trades.push_back(trade);
+
                     last_trade_price = order->getPrice();
-                    last_trade_quantity = trade;
+                    last_trade_quantity = units;
 
-                    (*it)->modify((*it)->getQuantity() - trade);
-                    modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade, order->getPrice());
+                    (*it)->modify((*it)->getQuantity() - units);
+                    modifyorderFAKorMarket(order->getId(), order->getQuantity() - units, order->getPrice());
                     if ((*it)->getQuantity() == 0)
                     {
                         cancel_order((*it)->getId());
@@ -172,14 +213,19 @@ class OrderBook
             {
                 auto it = asks.begin();
 
-                int trade = min((*it)->getQuantity(), order->getQuantity());
+                int units = min((*it)->getQuantity(), order->getQuantity());
 
-                cout << "Trade: Quantity = " << trade << " at $" << (*it)->getPrice() << " (Bid ID: " << (order)->getId() << ", Ask ID: " << (*it)->getId() << ")\n\n";
+                Trade *trade = new Trade((order)->getId(), (*it)->getId(), units, ((*it)->getPrice()));
+
+                cout << (*trade);
+
+                trades.push_back(trade);
+
                 last_trade_price = (*it)->getPrice();
-                last_trade_quantity = trade;
+                last_trade_quantity = units;
 
-                (*it)->modify((*it)->getQuantity() - trade);
-                modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade);
+                (*it)->modify((*it)->getQuantity() - units);
+                modifyorderFAKorMarket(order->getId(), order->getQuantity() - units);
 
                 if ((*it)->getQuantity() == 0)
                 {
@@ -194,15 +240,19 @@ class OrderBook
             {
 
                 auto it = bids.begin();
+                int units = min((*it)->getQuantity(), order->getQuantity());
 
-                int trade = min((*it)->getQuantity(), order->getQuantity());
+                Trade *trade = new Trade((*it)->getId(), (order)->getId(), units, ((order)->getPrice()));
 
-                cout << "Trade: Quantity = " << trade << " at $" << (*it)->getPrice() << " (Bid ID: " << (*it)->getId() << ", Ask ID: " << order->getId() << ")\n\n";
-                last_trade_price = (*it)->getPrice();
-                last_trade_quantity = trade;
+                cout << (*trade);
 
-                (*it)->modify((*it)->getQuantity() - trade);
-                modifyorderFAKorMarket(order->getId(), order->getQuantity() - trade);
+                trades.push_back(trade);
+
+                last_trade_price = order->getPrice();
+                last_trade_quantity = units;
+
+                (*it)->modify((*it)->getQuantity() - units);
+                modifyorderFAKorMarket(order->getId(), order->getQuantity() - units);
 
                 if ((*it)->getQuantity() == 0)
                 {
@@ -222,27 +272,33 @@ class OrderBook
             Order *b = *(asks.begin());
             if (a->getPrice() >= b->getPrice())
             {
-                int trade = min(b->getQuantity(), a->getQuantity());
-                cout << "Trade: Quantity = " << trade << " at $" << b->getPrice() << " (Bid ID: " << a->getId() << ", Ask ID: " << b->getId() << ")\n\n";
-                last_trade_price = b->getPrice();
-                last_trade_quantity = trade;
+                int units = min(b->getQuantity(), a->getQuantity());
 
-                if (a->getQuantity() == trade)
+                Trade *trade = new Trade(a->getId(), b->getId(), units, b->getPrice());
+
+                cout << (*trade);
+
+                trades.push_back(trade);
+
+                last_trade_price = b->getPrice();
+                last_trade_quantity = units;
+
+                if (a->getQuantity() == units)
                 {
                     cancel_order(a->getId());
                 }
                 else
                 {
-                    a->modify(a->getQuantity() - trade, a->getPrice());
+                    a->modify(a->getQuantity() - units, a->getPrice());
                 }
 
-                if (b->getQuantity() == trade)
+                if (b->getQuantity() == units)
                 {
                     cancel_order(b->getId());
                 }
                 else
                 {
-                    b->modify(b->getQuantity() - trade, b->getPrice());
+                    b->modify(b->getQuantity() - units, b->getPrice());
                 }
             }
             else
@@ -254,7 +310,7 @@ class OrderBook
         print_spread();
 
         cout << endl
-             << endl; // for limitorders and fillandkill orders
+             << endl;
     }
 
     void print_midquote()
@@ -592,19 +648,32 @@ public:
         }
     }
 
+    void print_trades()
+    {
+        cout << "Following Trades happend till now:-\n\n";
+        for (auto trade : trades)
+        {
+            cout << (*trade);
+        }
+        cout << endl;
+    }
+
     ~OrderBook()
     {
+
+        print_trades();
         if (orders.size())
         {
-            cout << "Partially Executed Orders:-\n\n";
+            cout << "Number of Partially Filled Orders: " << orders.size() << "\n\n";
         }
         while (orders.size())
         {
-            (*orders.begin()).second->print();
+            cout << *(orders.begin()->second);
             cancel_order(orders.begin()->first);
         }
         bids.clear();
         asks.clear();
+        trades.clear();
     }
 };
 
