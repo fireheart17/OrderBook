@@ -96,9 +96,10 @@ class OrderBook
             }
             if (tot >= order->getQuantity())
             {
-                it = asks.begin();
                 while (order->getQuantity())
                 {
+                    it=asks.begin();
+
                     int trade = min((*it)->getQuantity(), order->getQuantity());
 
                     cout << "Trade: Quantity = " << trade << " at $" << (*it)->getPrice() << " (Bid ID: " << (order)->getId() << ", Ask ID: " << (*it)->getId() << ")\n\n";
@@ -112,7 +113,6 @@ class OrderBook
                     {
                         cancel_order((*it)->getId());
                     }
-                    it++;
                 }
             }
         }
@@ -126,9 +126,9 @@ class OrderBook
             }
             if (tot >= order->getQuantity())
             {
-                it = bids.begin();
                 while (order->getQuantity())
                 {
+                	it = bids.begin();
                     int trade = min((*it)->getQuantity(), order->getQuantity());
 
                     cout << "Trade: Quantity = " << trade << " at $" << order->getPrice() << " (Bid ID: " << (*it)->getId() << ", Ask ID: " << order->getId() << ")\n\n";
@@ -142,7 +142,6 @@ class OrderBook
                     {
                         cancel_order((*it)->getId());
                     }
-                    it++;
                 }
             }
         }
@@ -155,8 +154,8 @@ class OrderBook
         {
             while (order->getQuantity() && asks.size())
             {
-
-                auto it = asks.begin();
+            	auto it=asks.begin();
+                
                 int trade = min((*it)->getQuantity(), order->getQuantity());
 
                 cout << "Trade: Quantity = " << trade << " at $" << (*it)->getPrice() << " (Bid ID: " << (order)->getId() << ", Ask ID: " << (*it)->getId() << ")\n\n";
@@ -170,15 +169,16 @@ class OrderBook
                 {
                     cancel_order((*it)->getId());
                 }
-                it++;
             }
         }
         else
         {
+
             while (order->getQuantity() && bids.size())
             {
 
-                auto it = bids.begin();
+        		auto it = bids.begin();
+                
                 int trade = min((*it)->getQuantity(), order->getQuantity());
 
                 cout << "Trade: Quantity = " << trade << " at $" << (*it)->getPrice() << " (Bid ID: " << (*it)->getId() << ", Ask ID: " << order->getId() << ")\n\n";
@@ -192,7 +192,6 @@ class OrderBook
                 {
                     cancel_order((*it)->getId());
                 }
-                it++;
             }
         }
 
@@ -443,7 +442,7 @@ public:
         }
         cout << "Successfully modified the order having ID " << order_id << endl;
 
-        process_orders(); // overloaded for market orders
+        process_orders();
     }
 
     void process_message(string msg)
@@ -549,6 +548,14 @@ public:
             print_summary();
         }
     }
+
+    ~OrderBook(){
+    	while(orders.size()){
+    		cancel_order(orders.begin()->first);
+    	}
+	    bids.clear();
+	    asks.clear();
+    }
 };
 
 int main()
@@ -556,27 +563,28 @@ int main()
     OrderBook ob;
     vector<string> messages = {
         "A,limitorder,B,1,10,1000",
-        "A,limitorder,A,2,10,1000",
-        "A,limitorder,B,1,10,1000",
-        "A,limitorder,B,1,10,1000"
+        "A,limitorder,A,2,10,800",
+        "A,limitorder,B,3,10,1000",
+        "A,limitorder,A,4,10,400",
 
-        "A,limitorder,A,2,5,1005",
-        "A,marketorder,B,3,10",
-        "A,limitorder,B,1,10,1000",
-        "A,limitorder,A,2,5,1005",
-        "A,fillorkill,A,3,10,1002",
+        "A,limitorder,A,5,5,1005",
+        "A,marketorder,B,6,10",
+        "A,limitorder,B,7,10,1000",
+        "A,limitorder,A,8,5,1005",
+        "A,fillorkill,A,9,10,1002",
 
         "A,limitorder,B,1,10,1000",
         "A,limitorder,A,2,5,1005",
         "X,1",
-        "A,limitorder,B,1,10,1000",
-        "A,limitorder,A,2,5,1005",
+        "A,limitorder,B,10,10,1000",
+        "A,limitorder,A,21,5,1005",
         "M,1,5,1010",
-        "A,limitorder,B,1,10,1000",
+        "A,limitorder,B,32,10,1000",
         "X,5",
         "M,2,5,1005",
-        "A,limitorder,B,1,10,1000",
-        "A,fillandkill,A,2,5,1000"};
+        "A,limitorder,B,111,10,1000",
+        "A,fillandkill,A,22,5,1000"
+    };
 
     for (const auto &msg : messages)
     {
