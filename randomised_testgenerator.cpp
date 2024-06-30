@@ -5,11 +5,11 @@ using namespace std;
 
 
 // uniform_int_distribution<int>(l,r)(rng);
-    	mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
+mt19937 rng(chrono::steady_clock::now().time_since_epoch().count());
 
 void solve(){
-    
-    vector<char>action={'A','A','A','A','A','X','M'}; // action,type,side,orderid,quantity,price 
+     // action,type,side,orderid,quantity,price 
+    vector<char>action={'A','A','A','A','A','X','M'}; // added extra A's to increase probability for A messages
     vector<char>side={'A','B'};
     vector<string>types= {"limitorder", "fillandkill", "marketorder", "fillorkill","ndjbefv","invalidtype"};
     vector<string>messages;
