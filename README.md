@@ -43,31 +43,32 @@ The Order Book system is designed to handle and process various types of orders 
 
 - **Order Class**: Represents an order with attributes such as type, side (bid/ask), order ID, quantity, and price.
 - **OrderBook Class**: Manages the collection of orders, processes trades, and maintains the order book.
+- **Trade Class**: Represents a trade with attributes such as bid ID, ask ID, quantity, and price.
 
 ### Key Features
 
 1. **Order Types Supported**:
-   - **Limit Order**: An order to buy or sell a stock at a specific price or better.
-   - **Fill and Kill Order**: An order that must be executed immediately and completely or not at all.
-   - **Market Order**: An order to buy or sell a stock immediately at the current market price.
-   - **Fill or Kill Order**: An order that must be executed immediately and completely or not at all.
+   - **Limit Order**: An order to buy or sell a stock at a specified price or better. It ensures that the order will only be executed at the limit price or a more favorable price.
+   - **Fill and Kill Order (FAK)**: Also known as Immediate or Cancel (IOC), this order attempts to fill as much of the order as possible immediately. Any portion of the order that cannot be filled immediately is canceled.
+   - **Market Order**: An order to buy or sell a stock immediately at the best available current price. This type of order prioritizes speed of execution over price, meaning the price is not specified. In the implementation, if a market order can only be partially filled, the system will fill it to the extent possible and cancel the remaining portion.
+   - **Fill or Kill Order (FOK)**: An order that must be executed immediately and completely at the specified price. If the entire order cannot be filled at once, it is canceled.
 
 2. **Order Operations**:
    - **Add Order**: Adds a new order to the order book.
    - **Modify Order**: Modifies an existing order in the order book.
    - **Cancel Order**: Cancels an existing order in the order book.
    - **Process Orders**: Processes trades by matching buy and sell orders.
+3. **Trade Processing**:
+   - **Process Trades**: Manages the trade execution based on order matching.
+   - **Trade Reporting**: Outputs trade details with precision up to 5 decimal places.
 
-### Definitions of Order Types
-
-1. **Limit Order**: An order to buy or sell a stock at a specified price or better. It ensures that the order will only be executed at the limit price or a more favorable price.
+4. **Order Book Summary**:
+   - **Print Summary**: Prints a summary of the current state of the order book including best bid, best ask, and trade history.
+   - **Midquote**: Calculates and returns the midquote, which is the average of the best bid and best ask prices.
+   - **Spread**: Calculates and returns the spread, which is the difference between the best bid and best ask prices.
+   - **Level Info**: Provides information about the order book at a specific level, such as price and quantity of orders.
+   - **Depth**: Calculates and returns the total quantity of orders at a given price level or better.
    
-2. **Fill and Kill Order (FAK)**: Also known as Immediate or Cancel (IOC), this order attempts to fill as much of the order as possible immediately. Any portion of the order that cannot be filled immediately is canceled.
-
-3. **Market Order**: An order to buy or sell a stock immediately at the best available current price. This type of order prioritizes speed of execution over price, meaning the price is not specified. In the implementation, if a market order can only be partially filled, the system will fill it to the extent possible and cancel the remaining portion.
-   
-4. **Fill or Kill Order (FOK)**: An order that must be executed immediately and completely at the specified price. If the entire order cannot be filled at once, it is canceled.
-
 ### How to Use
 
 1. **Adding an Order**:
@@ -100,6 +101,12 @@ The Order Book system is designed to handle and process various types of orders 
 
    ```cpp
    ob.process_message("A,limitorder,B,1,10,1000");
+   ```
+5. **Printing Order Book Summary**:
+   - Use the `print_summary` method to print the current state of the order book.
+
+   ```cpp
+   ob.print_summary();
    ```
 
 ### Randomized Test Generator (randomised_testgenerator.cpp)
