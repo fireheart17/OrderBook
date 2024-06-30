@@ -1,20 +1,135 @@
+### Order Book Management System
 
-Order: action,type,side,orderid,quantity,price (e.g., A,123,B,9,1000)
-action = A (add), X (remove), M (modify) ---- what to do with modify???
-type = limitorder, fillandkill ,marketorder,fillorkill
-orderid = unique positive integer to identify each order;
-used to reference existing orders for remove/modify
-side = B (bid), A (ask)
-quantity = positive integer indicating maximum quantity to buy/sell
-price = double indicating max price at which to buy/min price to sell
+This project implements an Order Book Management System using C++ that handles different types of orders (limit orders, fill-and-kill orders, market orders, and fill-or-kill orders). The system supports adding, modifying, and canceling orders, and processes trades accordingly.
 
-Trade: quantity,bidoid,askoid,price (e.g., T,2,1025)
-quantity = amount that traded
-bidoid = orderid of the bid
-askoid = orderid of ask
-price = price at which the trade happened
+### Files in the Project
 
-RULES:
+1. **orderbook.cpp**: This file contains the implementation of the Order Book system.
+2. **randomised_testgenerator.cpp**: This file contains a test generator to create randomized test cases for the Order Book system.
 
-can't modify market orders;
-if a market order can't be filled completely it will be filled partially and rest will be cancelled
+### Prerequisites
+
+- A C++ compiler (e.g., g++)
+
+### Compilation and Execution
+
+1. **Compile the Order Book system**
+
+   ```sh
+   g++ -o orderbook orderbook.cpp
+   ```
+
+2. **Compile the Randomized Test Generator**
+
+   ```sh
+   g++ -o testgen randomised_testgenerator.cpp
+   ```
+
+3. **Run the Order Book system**
+
+   ```sh
+   ./orderbook
+   ```
+
+4. **Run the Randomized Test Generator**
+
+   ```sh
+   ./testgen
+   ```
+
+### Order Book (orderbook.cpp)
+
+The Order Book system is designed to handle and process various types of orders in a financial market. It includes the following key components:
+
+- **Order Class**: Represents an order with attributes such as type, side (bid/ask), order ID, quantity, and price.
+- **OrderBook Class**: Manages the collection of orders, processes trades, and maintains the order book.
+
+### Key Features
+
+1. **Order Types Supported**:
+   - **Limit Order**: An order to buy or sell a stock at a specific price or better.
+   - **Fill and Kill Order**: An order that must be executed immediately and completely or not at all.
+   - **Market Order**: An order to buy or sell a stock immediately at the current market price.
+   - **Fill or Kill Order**: An order that must be executed immediately and completely or not at all.
+
+2. **Order Operations**:
+   - **Add Order**: Adds a new order to the order book.
+   - **Modify Order**: Modifies an existing order in the order book.
+   - **Cancel Order**: Cancels an existing order in the order book.
+   - **Process Orders**: Processes trades by matching buy and sell orders.
+
+### How to Use
+
+1. **Adding an Order**:
+   - Use the `add_order` method to add a new order.
+   - Parameters: `type` (string), `side` (char), `id` (int), `quantity` (int), `price` (double).
+
+   ```cpp
+   ob.add_order("limitorder", 'B', 1, 10, 1000.0);
+   ```
+
+2. **Modifying an Order**:
+   - Use the `modify_order` method to modify an existing order.
+   - Parameters: `order_id` (int), `quantity` (int), `price` (double).
+
+   ```cpp
+   ob.modify_order(1, 5, 995.0);
+   ```
+
+3. **Canceling an Order**:
+   - Use the `cancel_order` method to cancel an existing order.
+   - Parameter: `order_id` (int).
+
+   ```cpp
+   ob.cancel_order(1);
+   ```
+
+4. **Processing a Message**:
+   - Use the `process_message` method to process a message.
+   - Parameter: `msg` (string).
+
+   ```cpp
+   ob.process_message("A,limitorder,B,1,10,1000");
+   ```
+
+### Randomized Test Generator (randomised_testgenerator.cpp)
+
+The Randomized Test Generator creates randomized test cases to test the Order Book system.
+
+### How to Use
+
+1. **Generating Test Cases**:
+   - Run the compiled test generator executable to generate test cases.
+
+   ```sh
+   ./testgen
+   ```
+
+2. **Testing**:
+   - Use the generated test cases to test the Order Book system.
+
+### Example Usage
+
+Here is a simple example of how to use the Order Book system with test messages:
+
+```cpp
+int main() {
+    OrderBook ob;
+    vector<string> messages = {
+        "A,limitorder,B,1,10,1000",        // Add buy limit order: id=1, quantity=10, price=1000
+        "X,5",                             // Attempt to cancel non-existing order: id=5
+        "M,2,5,1005",                      // Attempt to modify non-existing order: id=2
+        "A,limitorder,B,1,10,1000",        // Add buy limit order: id=1, quantity=10, price=1000
+        "A,limitorder,A,2,5,1005",         // Add sell limit order: id=2, quantity=5, price=1005
+        "A,limitorder,B,3,7,995" 
+    };
+
+    for (const auto& msg : messages) {
+        ob.process_message(msg);
+    }
+
+    return 0;
+}
+```
+
+This project provides a robust framework for managing an order book in a financial market. The randomized test generator helps in validating the system with a variety of test cases.
