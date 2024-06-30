@@ -58,6 +58,16 @@ The Order Book system is designed to handle and process various types of orders 
    - **Cancel Order**: Cancels an existing order in the order book.
    - **Process Orders**: Processes trades by matching buy and sell orders.
 
+### Definitions of Order Types
+
+1. **Limit Order**: An order to buy or sell a stock at a specified price or better. It ensures that the order will only be executed at the limit price or a more favorable price.
+   
+2. **Fill and Kill Order (FAK)**: Also known as Immediate or Cancel (IOC), this order attempts to fill as much of the order as possible immediately. Any portion of the order that cannot be filled immediately is canceled.
+
+3. **Market Order**: An order to buy or sell a stock immediately at the best available current price. It prioritizes speed of execution over price.
+   
+4. **Fill or Kill Order (FOK)**: An order that must be executed immediately and completely at the specified price. If the entire order cannot be filled at once, it is canceled.
+
 ### How to Use
 
 1. **Adding an Order**:
@@ -121,7 +131,7 @@ int main() {
         "M,2,5,1005",                      // Attempt to modify non-existing order: id=2
         "A,limitorder,B,1,10,1000",        // Add buy limit order: id=1, quantity=10, price=1000
         "A,limitorder,A,2,5,1005",         // Add sell limit order: id=2, quantity=5, price=1005
-        "A,limitorder,B,3,7,995" 
+        "A,limitorder,B,3,7,995"           // Add buy limit order: id=3, quantity=7, price=995
     };
 
     for (const auto& msg : messages) {
