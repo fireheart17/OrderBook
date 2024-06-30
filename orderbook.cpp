@@ -98,7 +98,7 @@ class OrderBook
             {
                 while (order->getQuantity())
                 {
-                    it=asks.begin();
+                    it = asks.begin();
 
                     int trade = min((*it)->getQuantity(), order->getQuantity());
 
@@ -128,7 +128,7 @@ class OrderBook
             {
                 while (order->getQuantity())
                 {
-                	it = bids.begin();
+                    it = bids.begin();
                     int trade = min((*it)->getQuantity(), order->getQuantity());
 
                     cout << "Trade: Quantity = " << trade << " at $" << order->getPrice() << " (Bid ID: " << (*it)->getId() << ", Ask ID: " << order->getId() << ")\n\n";
@@ -154,8 +154,8 @@ class OrderBook
         {
             while (order->getQuantity() && asks.size())
             {
-            	auto it=asks.begin();
-                
+                auto it = asks.begin();
+
                 int trade = min((*it)->getQuantity(), order->getQuantity());
 
                 cout << "Trade: Quantity = " << trade << " at $" << (*it)->getPrice() << " (Bid ID: " << (order)->getId() << ", Ask ID: " << (*it)->getId() << ")\n\n";
@@ -177,8 +177,8 @@ class OrderBook
             while (order->getQuantity() && bids.size())
             {
 
-        		auto it = bids.begin();
-                
+                auto it = bids.begin();
+
                 int trade = min((*it)->getQuantity(), order->getQuantity());
 
                 cout << "Trade: Quantity = " << trade << " at $" << (*it)->getPrice() << " (Bid ID: " << (*it)->getId() << ", Ask ID: " << order->getId() << ")\n\n";
@@ -549,12 +549,14 @@ public:
         }
     }
 
-    ~OrderBook(){
-    	while(orders.size()){
-    		cancel_order(orders.begin()->first);
-    	}
-	    bids.clear();
-	    asks.clear();
+    ~OrderBook()
+    {
+        while (orders.size())
+        {
+            cancel_order(orders.begin()->first);
+        }
+        bids.clear();
+        asks.clear();
     }
 };
 
@@ -583,8 +585,7 @@ int main()
         "X,5",
         "M,2,5,1005",
         "A,limitorder,B,111,10,1000",
-        "A,fillandkill,A,22,5,1000"
-    };
+        "A,fillandkill,A,22,5,1000"};
 
     for (const auto &msg : messages)
     {
