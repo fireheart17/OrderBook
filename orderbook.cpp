@@ -5,7 +5,7 @@ using namespace std;
 /*
 
 Order: action,type,side,orderid,quantity,price (e.g., A,123,B,9,1000)
-action = A (add), X (remove), M (modify) ---- what to do with modify???
+action = A (add), X (remove), M (modify)
 type = limitorder, fillandkill ,marketorder,fillorkill
 orderid = unique positive integer to identify each order;
 used to reference existing orders for remove/modify
