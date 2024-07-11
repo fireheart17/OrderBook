@@ -68,7 +68,47 @@ The Order Book system is designed to handle and process various types of orders 
    - **Spread**: Calculates and returns the spread, which is the difference between the best bid and best ask prices.
    - **Level Info**: Provides information about the order book at a specific level, such as price and quantity of orders.
    - **Depth**: Calculates and returns the total quantity of orders at a given price level or better.
-   
+   Certainly! Here's an explanation of some key financial market terms:
+
+### Financial Market Terms
+
+**Market makers** are firms or individuals that actively buy and sell securities, providing liquidity to the market. They play a crucial role in ensuring that there is always a counterparty for investors looking to buy or sell securities. Market makers profit from the bid-ask spread, which is the difference between the buying (bid) and selling (ask) prices of a security.
+
+### Liquidity
+**Liquidity** refers to the ease with which an asset can be bought or sold in the market without affecting its price. High liquidity means that an asset can be quickly sold or bought with minimal price fluctuation. For example, major stocks like Apple or Microsoft are considered highly liquid because they are traded frequently and in large volumes.
+
+### Bid-Ask Spread
+The **bid-ask spread** is the difference between the highest price a buyer is willing to pay for a security (the bid) and the lowest price a seller is willing to accept (the ask). A narrower spread often indicates a more liquid market, while a wider spread can indicate less liquidity and higher trading costs.
+
+### Volatility
+**Volatility** measures the degree of variation of a trading price series over time. It is often quantified as the standard deviation of returns. High volatility indicates large price swings, while low volatility suggests relatively stable prices.
+
+### Arbitrage
+**Arbitrage** involves the simultaneous purchase and sale of an asset in different markets to exploit price differences. Traders who practice arbitrage aim to profit from the discrepancies without any risk, although in practice, risks can still be present.
+
+### Derivatives
+**Derivatives** are financial instruments whose value is derived from the value of an underlying asset. Common types of derivatives include options, futures, and swaps. These instruments are often used for hedging risks or for speculative purposes.
+
+### Hedge Funds
+**Hedge funds** are investment funds that employ various strategies to earn active returns for their investors. They can invest in a wide range of assets and use techniques like leverage, short-selling, and derivatives to enhance returns.
+
+### Index Funds
+**Index funds** are mutual funds or exchange-traded funds (ETFs) designed to replicate the performance of a specific index, such as the S&P 500. They offer broad market exposure, low operating expenses, and low portfolio turnover.
+
+### Bonds
+**Bonds** are debt securities issued by corporations, municipalities, or governments to raise capital. Investors in bonds are essentially lending money to the issuer in exchange for periodic interest payments and the return of the bond's face value at maturity.
+
+### Equity
+**Equity** represents ownership in a company, typically in the form of stocks. Shareholders are entitled to a portion of the company’s profits, usually distributed as dividends, and have voting rights on corporate matters.
+
+### Mutual Funds
+**Mutual funds** are investment vehicles that pool money from many investors to purchase a diversified portfolio of stocks, bonds, or other securities. They are managed by professional portfolio managers and offer investors an easy way to diversify their holdings.
+
+### Exchange-Traded Funds (ETFs)
+**ETFs** are investment funds traded on stock exchanges, similar to stocks. They hold assets such as stocks, commodities, or bonds and generally aim to track an index. ETFs offer the diversification of mutual funds with the flexibility of stock trading.
+
+These terms are foundational to understanding the dynamics of financial markets and the various strategies and instruments involved in trading and investment.
+
 ### How to Use
 
 1. **Adding an Order**:
