@@ -70,6 +70,38 @@ The Order Book system is designed to handle and process various types of orders 
    - **Depth**: Calculates and returns the total quantity of orders at a given price level or better.
    Certainly! Here's an explanation of some key financial market terms:
 
+## Other Order Types
+
+- **Fill and Kill (FAK) Order**: FAK orders are immediately executed against resting orders. Any quantity that remains unfilled is cancelled.
+
+- **Fill or Kill (FOK) Order**: FOK orders are cancelled if not immediately filled for the total quantity at the specified price or better.
+
+- **Give Up**: An order to be given to another member firm in the clearing system, an allocation. An order executed by clearing firm A and given to clearing firm B where it will be cleared and processed. Give up order indicator is "GU" populated in the F-Ex field.
+
+- **Good Till Cancel (GTC) Order**: GTC orders remain open until they are completely executed or cancelled.
+
+- **Good Till Date (GTD) Order**: GTD orders expire either at a specified date or when the security expires.
+
+- **In Flight Mitigation (IFM)**: Customers who use the IFM Cancel/Replace functionality are able to mitigate in flight fills and prevent overfilling.
+
+- **Limit Order**: Limit orders allow customers to define the maximum price for buying a security or the minimum price for selling a security.
+  - **Buy Orders**: Executed at or below the limit price.
+  - **Sell Orders**: Executed at or above the limit price.
+
+- **Market Limit Order**: Market Limit orders are executed at the best available price on the opposite side of the market. If the order cannot be completely filled, the order becomes a Limit order and the remaining quantity rests on the order book at the fill price. If no market is available, the order is rejected.
+
+- **Market Order**: A Market order (with protection) has a protection range limiting the price at which an order can trade. Market orders (with protection) are assigned Protection Price Limits based upon pre-defined protection points and the best available price on the opposite side of the market.
+
+- **Minimum Quantity**: Minimum quantity of an order to be executed. This tag can be used in conjunction with FAK.
+
+- **Maximum Quantity Display**: Maximum quantity of an order to be shown in the order book to other customers at any given time.
+
+- **Route-Through**: Route-Through allows firms to submit orders for clients, as well as other clearing members for whom the firm is authorized to do business. This occurs by changing the firm within the SenderCompID to the one assigned to another firm.
+
+- **Stop Order**: A Stop order (with protection) has a protection range limiting the price at which an order can trade. When a Stop order (with protection) is triggered, it becomes a Limit order at the Protection Price Limit.
+
+- **Stop Limit Order**: Stop Limit orders are activated when an order's trigger price is traded in the market. The order is executed at all price levels between the trigger price and the limit price. For buy orders, the trigger price is lower than the best available price on the opposite side of the market.
+
 ### Financial Market Terms
 
 **Market makers** are firms or individuals that actively buy and sell securities, providing liquidity to the market. They play a crucial role in ensuring that there is always a counterparty for investors looking to buy or sell securities. Market makers profit from the bid-ask spread, which is the difference between the buying (bid) and selling (ask) prices of a security.
