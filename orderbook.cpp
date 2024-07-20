@@ -31,7 +31,7 @@ REMAINING:
 
 */
 
-const int inf=1e9+7;
+const int inf = 1e9 + 7;
 
 class Order
 {
@@ -49,14 +49,17 @@ public:
         : Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(price) {}
 
     Order(string type, char side, int oid, int quantity)
-        : Type(type), Side(side), Order_id(oid), Quantity(quantity){
-            if(side=='B'){
-                Price=inf;
-            }
-            else{
-                Price=-1;
-            }
+        : Type(type), Side(side), Order_id(oid), Quantity(quantity)
+    {
+        if (side == 'B')
+        {
+            Price = inf;
         }
+        else
+        {
+            Price = -1;
+        }
+    }
 
     char getSide() const { return Side; }
     int getId() const { return Order_id; }
@@ -119,9 +122,11 @@ struct CompareBid
     }
 };
 
-struct CompareAsk{
-    bool operator()(Order *a, Order *b) const{
-        return a->Price<b->Price;
+struct CompareAsk
+{
+    bool operator()(Order *a, Order *b) const
+    {
+        return a->Price < b->Price;
     }
 };
 
@@ -130,7 +135,7 @@ class OrderBook
 
     unordered_map<int, Order *> orders;
     set<Order *, CompareBid> bids;
-    set<Order *,CompareAsk> asks;
+    set<Order *, CompareAsk> asks;
     vector<string> types;
     int nextorderid;
     int messages;
@@ -545,7 +550,7 @@ public:
     }
 
     void process_message(string msg)
-    {        // using just a single semaphore here guards the complete critical section
+    { // using just a single semaphore here guards the complete critical section
         istringstream ss(msg);
         string token;
         vector<string> tokens;
