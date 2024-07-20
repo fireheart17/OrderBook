@@ -68,7 +68,6 @@ The Order Book system is designed to handle and process various types of orders 
    - **Spread**: Calculates and returns the spread, which is the difference between the best bid and best ask prices.
    - **Level Info**: Provides information about the order book at a specific level, such as price and quantity of orders.
    - **Depth**: Calculates and returns the total quantity of orders at a given price level or better.
-   Certainly! Here's an explanation of some key financial market terms:
 
 ## Other Order Types
 
