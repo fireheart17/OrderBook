@@ -67,7 +67,6 @@ The Order Book system is designed to handle and process various types of orders 
    - **Midquote**: Calculates and returns the midquote, which is the average of the best bid and best ask prices.
    - **Spread**: Calculates and returns the spread, which is the difference between the best bid and best ask prices.
    - **Level Info**: Provides information about the order book at a specific level, such as price and quantity of orders.
-   - **Depth**: Calculates and returns the total quantity of orders at a given price level or better.
 
 ## Other Order Types
 
