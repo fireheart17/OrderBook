@@ -357,24 +357,6 @@ class OrderBook
              << endl;
     }
 
-    void print_depth()
-    {
-        cout << "Depth Information:\n";
-        cout << "Bids:\n";
-        int level = 1;
-        for (auto it = bids.begin(); it != bids.end() && level <= 5; ++it, ++level)
-        {
-            cout << "Level " << level << ": Quantity = " << (*it)->getQuantity() << endl;
-        }
-        cout << "Asks:\n";
-        level = 1;
-        for (auto it = asks.begin(); it != asks.end() && level <= 5; ++it, ++level)
-        {
-            cout << "Level " << level << ": Quantity = " << (*it)->getQuantity() << endl;
-        }
-        cout << endl;
-    }
-
     void print_levelinfo()
     {
         cout << "Level Information:\n";
@@ -540,7 +522,7 @@ public:
         cout << endl;
         print_order_book();
         print_levelinfo();
-        print_depth();
+
         cout << endl;
     }
 
