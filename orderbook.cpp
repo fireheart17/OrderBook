@@ -1,5 +1,4 @@
 #include <bits/stdc++.h>
-#include <mutex>
 using namespace std;
 
 /*
@@ -32,6 +31,8 @@ REMAINING:
 
 */
 
+const int inf=1e9+7;
+
 class Order
 {
     char Side;
@@ -40,6 +41,7 @@ class Order
     string Type;
 
     friend struct CompareBid;
+    friend struct CompareAsk;
     friend ostream &operator<<(ostream &os, const Order &order);
 
 public:
@@ -47,7 +49,14 @@ public:
         : Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(price) {}
 
     Order(string type, char side, int oid, int quantity)
-        : Type(type), Side(side), Order_id(oid), Quantity(quantity), Price(-1) {}
+        : Type(type), Side(side), Order_id(oid), Quantity(quantity){
+            if(side=='B'){
+                Price=inf;
+            }
+            else{
+                Price=-1;
+            }
+        }
 
     char getSide() const { return Side; }
     int getId() const { return Order_id; }
@@ -110,12 +119,18 @@ struct CompareBid
     }
 };
 
+struct CompareAsk{
+    bool operator()(Order *a, Order *b) const{
+        return a->Price<b->Price;
+    }
+};
+
 class OrderBook
 {
 
     unordered_map<int, Order *> orders;
     set<Order *, CompareBid> bids;
-    set<Order *> asks;
+    set<Order *,CompareAsk> asks;
     vector<string> types;
     int nextorderid;
     int messages;
@@ -530,9 +545,7 @@ public:
     }
 
     void process_message(string msg)
-    {
-        lock_guard<mutex> guard(orderbook_mutex); // Acquires the lock
-                                                  // using just a single semaphore here guards the complete critical section
+    {        // using just a single semaphore here guards the complete critical section
         istringstream ss(msg);
         string token;
         vector<string> tokens;
@@ -549,7 +562,7 @@ public:
         }
 
         if (tokens[0] == "A")
-        { // A,side,oid,quantity,price,type
+        { // A,type,side,id,quantity,price
             if (tokens.size() == 5 && tokens[1] == types[2])
             { // market order
                 string type = tokens[1];
